@@ -1,45 +1,54 @@
-import React, { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import React, { useContext, useState } from 'react'
 
-function App() {
-  const [count, setCount] = useState(0)
+const appContext = React.createContext(null)
+
+export const App = () => {
+  const [state, setState] = useState({
+    user: { name: 'mize', age: 20 }
+  })
+
+  const contextValue = { state, setState }
+
+  console.log(contextValue)
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.jsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
+    <appContext.Provider value={contextValue}>
+      <A />
+      <B />
+      <C />
+    </appContext.Provider>
   )
 }
 
-export default App
+const A = () => <section>A <User /></section>
+const B = () => <section>B <UserModifier /> </section>
+const C = () => <section>C <User /></section>
+const User = () => {
+  const contextValue = useContext(appContext)
+  return <div>User: {contextValue.state.user.name}</div>
+}
+
+const UserModifier = () => {
+  const { state, setState } = useContext(appContext)
+
+  const onChange = (e) => {
+    state.user.name = e.target.value
+    setState({ ...state })
+  }
+  return (
+    <input value={state.user.name} onChange={onChange}></input>
+  )
+}
+
+// const UserModifier = () => {
+//   const { appState, setAppState } = useContext(appContext)
+
+//   const onChange = (e) => {
+//     appState.user.name = e.target.value;
+//     setAppState({ ...appState })
+//   }
+
+//   return <div>
+//     <input value={appState.user.name} onChange={onChange} />
+//   </div>
+// }
