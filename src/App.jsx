@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { Component, useContext, useState } from 'react'
 
 const appContext = React.createContext(null)
 
@@ -21,7 +21,7 @@ export const App = () => {
 }
 
 const A = () => <section>A <User /></section>
-const B = () => <section>B <UserModifier /> </section>
+const B = () => <section>B <UserModifier name='Input' /> </section>
 const C = () => <section>C <User /></section>
 const User = () => {
   const contextValue = useContext(appContext)
@@ -39,23 +39,28 @@ const reducer = (state, { type, payload }) => {
   }
 }
 
-const UserModifier = () => {
+const connect = (Component) => (props) => {
   const { state, setState } = useContext(appContext)
   const dispatch = (action) => {
     setState(reducer(state, action))
   }
+  return <Component {...props} dispatch={dispatch} state={state} />
+}
+
+const UserModifier = connect(({ dispatch, state, ...rest }) => {
   const onChange = (e) => {
     // 1. 
     // state.user.name = e.target.value
     // setState({ ...state })
-
     // 2. 
     // setState(reducer(state, { type: 'updateUser', payload: { name: e.target.value } }))
-
     // Now
     dispatch({ type: 'updateUser', payload: { name: e.target.value } })
   }
   return (
-    <input value={state.user.name} onChange={onChange}></input>
+    <>
+      {console.log(rest)}
+      <input value={state.user.name} onChange={onChange}></input>
+    </>
   )
-}
+})
