@@ -28,27 +28,25 @@ const User = () => {
   return <div>User: {contextValue.state.user.name}</div>
 }
 
+const reducer = (state, { type, payload }) => {
+  if (type === 'updateUser') {
+    return {
+      ...state,
+      user: { ...state.user, ...payload }
+    }
+  } else {
+    return state
+  }
+}
+
 const UserModifier = () => {
   const { state, setState } = useContext(appContext)
-
   const onChange = (e) => {
-    state.user.name = e.target.value
-    setState({ ...state })
+    // state.user.name = e.target.value
+    // setState({ ...state })
+    setState(reducer(state, { type: 'updateUser', payload: { name: e.target.value } }))
   }
   return (
     <input value={state.user.name} onChange={onChange}></input>
   )
 }
-
-// const UserModifier = () => {
-//   const { appState, setAppState } = useContext(appContext)
-
-//   const onChange = (e) => {
-//     appState.user.name = e.target.value;
-//     setAppState({ ...appState })
-//   }
-
-//   return <div>
-//     <input value={appState.user.name} onChange={onChange} />
-//   </div>
-// }
