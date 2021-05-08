@@ -41,10 +41,19 @@ const reducer = (state, { type, payload }) => {
 
 const UserModifier = () => {
   const { state, setState } = useContext(appContext)
+  const dispatch = (action) => {
+    setState(reducer(state, action))
+  }
   const onChange = (e) => {
+    // 1. 
     // state.user.name = e.target.value
     // setState({ ...state })
-    setState(reducer(state, { type: 'updateUser', payload: { name: e.target.value } }))
+
+    // 2. 
+    // setState(reducer(state, { type: 'updateUser', payload: { name: e.target.value } }))
+
+    // Now
+    dispatch({ type: 'updateUser', payload: { name: e.target.value } })
   }
   return (
     <input value={state.user.name} onChange={onChange}></input>
