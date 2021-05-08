@@ -1,39 +1,5 @@
-import React, { Component, useContext, useEffect, useState } from 'react'
-
-const appContext = React.createContext(null)
-const store = {
-  state: {
-    user: { name: 'mize', age: 20 }
-  },
-  setState(newState) {
-    store.state = newState
-    store.listeners.map(fn => fn(store.state))
-  },
-  listeners: [],
-  subscribe(fn) {
-    const l = store.listeners;
-    console.log(l)
-    l.push(fn)
-    return () => {
-      const i = l.indexOf(fn)
-      l.splice(i, 1)
-    }
-  }
-}
-
-const connect = (Component) => (props) => {
-  const { state, setState } = useContext(appContext)
-  const [, update] = useState({})
-  useEffect(() => {
-    store.subscribe(() => {
-      update({})
-    })
-  }, [])
-  const dispatch = (action) => {
-    setState(reducer(state, action))
-  }
-  return <Component {...props} dispatch={dispatch} state={state} />
-}
+import React, { useContext } from 'react'
+import { store, connect, appContext } from './redux'
 
 export const App = () => {
   return (
@@ -45,34 +11,19 @@ export const App = () => {
   )
 }
 
-const A = () => {
-  return <section>A <UserA /></section>
-}
-const B = () => {
-  return <section>B <UserModifier name='Input' /> </section>
-}
-const C = () => {
-  return <section>C <UserC /> </section>
-}
+const A = () => <section>A <UserA /></section>
+const B = () => <section>B <UserModifier name='Input' /> </section>
+const C = () => <section>C <UserC /> </section>
+
 const UserA = connect(({ state, dispatch }) => {
   console.log('A Update', Math.random())
   return <div>User: {state.user.name}</div>
 })
+
 const UserC = () => {
   console.log('C Update', Math.random())
   const { state } = useContext(appContext)
   return <div>User: {state.user.name}</div>
-}
-
-const reducer = (state, { type, payload }) => {
-  if (type === 'updateUser') {
-    return {
-      ...state,
-      user: { ...state.user, ...payload }
-    }
-  } else {
-    return state
-  }
 }
 
 const UserModifier = connect(({ dispatch, state, ...rest }) => {
